@@ -32,4 +32,5 @@ app.use("/api/appointments", appointmentRoutes);
 // global error handler
 app.use(errorHandler);
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => {console.log(`Server running on port ${PORT}`);
+});
