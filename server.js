@@ -27,8 +27,6 @@ app.get('/', (req, res) => {
 });
 
 
-app.use("/api/appointments", appointmentRoutes);
-
 // global error handler
 app.use(errorHandler);
 
