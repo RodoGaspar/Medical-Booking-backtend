@@ -21,7 +21,8 @@ const appointmentSchema = new mongoose.Schema({
     },
     doctor: {
         type: String,
-        default: "",
+        enum: ["Dr. Brahms", "Dra. Scheeling", "Dr. Sforza"],
+        required: true,
     },
     notes: {
         type: String,

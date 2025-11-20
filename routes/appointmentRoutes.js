@@ -5,7 +5,7 @@ import { validateAppointment } from '../middleware/validateAppointment.js';
 
 const router = express.Router();
 
-const DOCTORS = ["Dr. Brahms", "Dr. Scheeling", "Dr. Sforza"]
+const DOCTORS = ["Dr. Brahms", "Dra. Scheeling", "Dr. Sforza"]
 
 // @route POST /api/appointments
 // @desc Create a new appointment
@@ -13,8 +13,13 @@ router.post('/', validateAppointment, async (req, res) => {
     try {
         const { patientName, email, phone, date, doctor, notes } = req.body;
 
-        if (!patientName || !email || !phone || !date) {
+        if (!patientName || !email || !phone || !date || !doctor) {
             return res.status(400).json({ message: "Missing required fields" });
+        }
+
+        const allowedDoctors = [ "Dr. Brahms", "Dra. Scheeling", "Dr. Sforza"];
+        if (!allowedDoctors.includes(doctor)) {
+            return res.status(400).json({ message: "Invalid doctor selected"});
         }
 
         //Normalize date
