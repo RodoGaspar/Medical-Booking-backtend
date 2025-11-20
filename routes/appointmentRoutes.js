@@ -5,19 +5,48 @@ import { validateAppointment } from '../middleware/validateAppointment.js';
 
 const router = express.Router();
 
+const DOCTORS = ["Dr. Brahms", "Dr. Scheeling", "Dr. Sforza"]
+
 // @route POST /api/appointments
 // @desc Create a new appointment
 router.post('/', validateAppointment, async (req, res) => {
     try {
         const { patientName, email, phone, date, doctor, notes } = req.body;
 
-        if (!date) {
-            return res.status(400).json({ message: "Date is required"})
+        if (!patientName || !email || !phone || !date) {
+            return res.status(400).json({ message: "Missing required fields" });
         }
 
         //Normalize date
-        const appointmentDate = new Date(date);
-        appointmentDate.setSeconds(0, 0); //Normalize seconds/milliseconds
+        const appointmentDate = new Date(date)
+
+        // invalid date check
+        if (isNaN(appointmentDate.getTime())) {
+            return res.status(400).json({ message: "Invalid date format"});
+        }
+
+        //Normalize seconds/milliseconds
+        appointmentDate.setSeconds(0, 0); 
+
+        //prevent past dates (compare by milliseconds)
+        const now = new Date();
+        if (appointmentDate < now) {
+            return res.status(400).json({ message: "La fecha ya pasó" });
+        }
+
+        // Enforce working hours (9am - 5pm)
+        const hour = appointmentDate.getHours();
+        const minute = appointmentDate.getMinutes();
+        const startHour = 9;
+        const endHour = 17;
+        if (hour < startHour || hour >= endHour) {
+            return res.status(400).json({ message: "Horario fuera de atención (9:00 - 17:00)" });
+        }
+
+        // Enforce 30-minute intervals
+        if (![0, 30].includes(minute)) {
+            return res.status(400).json({ message: "Las citas solo pueden ser en intervalos de 30 minutos" });
+        }
 
         //Check is slot already taken
         const existing = await Appointment.findOne({ date: appointmentDate});
@@ -29,7 +58,7 @@ router.post('/', validateAppointment, async (req, res) => {
         await appointment.save();
 
         res.status(201).json({ message: 'Appointment created successfully', appointment });
-        } catch (error) {
+    } catch (error) {
             console.error('Error creating appointment:', error);
             res.status(500).json({ message: 'Server error' });
         }
