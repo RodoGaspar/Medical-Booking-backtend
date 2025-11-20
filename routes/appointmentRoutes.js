@@ -2,6 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import Appointment from '../models/Appointment.js';
 import { validateAppointment } from '../middleware/validateAppointment.js';
+import { sendEmail } from '../utils/email.js';
 
 const router = express.Router();
 
@@ -63,6 +64,33 @@ router.post('/', validateAppointment, async (req, res) => {
         await appointment.save();
 
         res.status(201).json({ message: 'Appointment created successfully', appointment });
+
+        //Send mail to clinic after saving
+        await sendEmail ({
+            to: process.env.CLINIC_EMAIL,
+            subject: "New appointment booked",
+            html: `
+                <h2>Nuevo Turno</h2>
+                <p><strong>Name:</strong>${patientName}</p>
+                <p><strong>Email:</strong>${email}</p>
+                <p><strong>Phone:</strong> ${phone}</p>
+                <p><strong>Date:</strong> ${appointmentDate}</p>
+                <p><strong>Doctor:</strong> ${doctor}</p>
+                <p><strong>Notes:</strong> ${notes || "None"}</p>
+            `
+        });
+
+        // Send mail to patient
+        await sendEmail({
+            to: email,
+            subject: "Your appointment is confirmed",
+            html: `
+                <h2>Turno Confirmado</h2>
+                <p> Hola ${patientName}, tu turno se registró correctamente.</p>
+                <p>Fecha: ${appointmentDate}</p>
+            `
+        });
+
     } catch (error) {
             console.error('Error creating appointment:', error);
             res.status(500).json({ message: 'Server error' });
