@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import Appointment from '../models/Appointment.js';
 import { validateAppointment } from '../middleware/validateAppointment.js';
 import { sendEmail } from '../utils/email.js';
+import { auth } from " ../middleware/auth.js";
 
 const router = express.Router();
 
@@ -99,7 +100,7 @@ router.post('/', validateAppointment, async (req, res) => {
 
 // @route GET /api/appointments
 // @desc Get all appointments (with optional filters)
-router.get('/', async (req, res) => {
+router.get('/', auth,  async (req, res) => {
     try {
         const { doctor, status, from, to }= req.query;
 
@@ -180,7 +181,7 @@ router.get("/availability", async (req, res, next) => {
 
 // @route GET /api/appointments/:id
 // @desc Get appointment by ID
-router.get('/:id', async (req, res, next) => {
+router.get('/:id', auth, async (req, res, next) => {
     try {
 
         const { id } = req.params;
@@ -204,7 +205,7 @@ router.get('/:id', async (req, res, next) => {
 
 //@route PUT /api/appointments/:id
 //@desc Update appointment by ID
-router.put('/:id', validateAppointment, async (req, res) => {
+router.put('/:id', auth, validateAppointment, async (req, res) => {
     try{
         const { patientName, email, phone, date, doctor, notes } = req.body;
         const appointment = await Appointment.findByIdAndUpdate(
@@ -224,7 +225,7 @@ router.put('/:id', validateAppointment, async (req, res) => {
 
 // @route DELETE /api/appointments/:id
 // @desc Delete appointment
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', auth, async (req, res) => {
     try{
         const appointment = await Appointment.findByIdAndDelete(req.params.id);
         if(!appointment) {
@@ -240,7 +241,7 @@ router.delete('/:id', async (req, res) => {
 //@route PATCH /api/appointments/:id/status
 //@desc Update only the appointment status
 
-router.patch('/:id/status', async (req, res) => {
+router.patch('/:id/status', auth, async (req, res) => {
     try {
         const {status} =req.body;
         if (!["pending", "confirmed", "cancelled"].includes(status)) {
