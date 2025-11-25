@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import Appointment from '../models/Appointment.js';
 import { validateAppointment } from '../middleware/validateAppointment.js';
 import { sendEmail } from '../utils/email.js';
-import { auth } from " ../middleware/auth.js";
+import { auth } from "../middleware/auth.js";
 
 const router = express.Router();
 

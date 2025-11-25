@@ -2,6 +2,7 @@ import express from 'express';
 import Admin from "../models/Admin.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { auth } from "../middleware/auth.js";
 
 const router = express.Router();
 
@@ -31,6 +32,12 @@ router.post("/login", async (req, res) => {
         console.error("Login error", error);
         res.status(500).json({ message: "Server error "});
     }
+});
+
+// Get /api/admin/verify
+router.get("/verify", auth, (req, res) => {
+    // If the auth middleware passses, the token is valid
+    res.json({ok: true});
 });
 
 export default router;
