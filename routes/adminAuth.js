@@ -8,7 +8,7 @@ const router = express.Router();
 
 // POST /api/admin/login
 router.post("/login", async (req, res) => {
-    console.log("📩 /api/admin/login HIT!", req.body);
+    console.log("/api/admin/login HIT!", req.body);
     const { email, password } = req.body;
     try {
         const admin = await Admin.findOne({ email });
