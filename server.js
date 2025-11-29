@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import appointmentRoutes from './routes/appointmentRoutes.js';
+import adminAuth from './routes/adminAuth.js';
 import { errorHandler } from './middleware/errorMiddleware.js';
 
 dotenv.config();
@@ -21,6 +22,7 @@ mongoose.connect(MONGO_URI)
     .catch(err => console.error('MongoDB conection error:', err));
 
 app.use('/api/appointments', appointmentRoutes);
+app.use('api/admin', adminAuth);
     
 app.get('/', (req, res) => {
     res.send('API is running...');
