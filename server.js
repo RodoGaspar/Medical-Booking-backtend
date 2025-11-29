@@ -22,7 +22,7 @@ mongoose.connect(MONGO_URI)
     .catch(err => console.error('MongoDB conection error:', err));
 
 app.use('/api/appointments', appointmentRoutes);
-app.use('api/admin', adminAuth);
+app.use('/api/admin', adminAuth);
     
 app.get('/', (req, res) => {
     res.send('API is running...');
