@@ -28,11 +28,11 @@ router.post("/login", async (req, res) => {
             process.env.JWT_SECRET,
             { expiresIn: "1d"}
         );
-
+        // Set token in HTTP-only cookie
         res.cookie("adminToken", token, {
             httpOnly: true,
             secure: true, // set to true if using HTTPS
-            sameSite: "strict",
+            sameSite: "strict", // Prevent CSRF          
             maxAge: 24 * 60 * 60 * 1000, // 1 day
         });
 
@@ -47,6 +47,15 @@ router.post("/login", async (req, res) => {
 router.get("/verify", auth, (req, res) => {
     // If the auth middleware passses, the token is valid
     res.json({ok: true});
+});
+
+router.post("/logout", (req, res) => {
+    res.clearCookie("adminToken", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "None"
+    });
+    res.json({ message: "Logged out" });
 });
 
 export default router;

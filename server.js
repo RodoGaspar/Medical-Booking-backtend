@@ -10,7 +10,10 @@ import { errorHandler } from './middleware/errorMiddleware.js';
 dotenv.config();
 
 const app = express();
-app.use(cors());
+app.use(cors({
+    origin: ["http://localhost:3000", "https://medical-booking-frontend-nine.vercel.app"], 
+    credentials: true
+}));
 app.use(express.json()); //lets us parse JSON bodies
 app.use(cookieParser());
 
