@@ -28,7 +28,15 @@ router.post("/login", async (req, res) => {
             process.env.JWT_SECRET,
             { expiresIn: "1d"}
         );
-        res.json({ token })
+
+        res.cookie("adminToken", token, {
+            httpOnly: true,
+            secure: true, // set to true if using HTTPS
+            sameSite: "strict",
+            maxAge: 24 * 60 * 60 * 1000, // 1 day
+        });
+
+        res.json({ success: true })
     } catch (error) {
         console.error("Login error", error);
         res.status(500).json({ message: "Server error "});

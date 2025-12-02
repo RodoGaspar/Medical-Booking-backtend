@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import appointmentRoutes from './routes/appointmentRoutes.js';
 import adminAuth from './routes/adminAuth.js';
 import { errorHandler } from './middleware/errorMiddleware.js';
@@ -11,6 +12,7 @@ dotenv.config();
 const app = express();
 app.use(cors());
 app.use(express.json()); //lets us parse JSON bodies
+app.use(cookieParser());
 
 
 const PORT = process.env.PORT || 5000;
