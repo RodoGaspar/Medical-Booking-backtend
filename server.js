@@ -10,8 +10,15 @@ import { errorHandler } from './middleware/errorMiddleware.js';
 dotenv.config();
 
 const app = express();
+const allowedOrigins = [process.env.CLIENT_URL, process.env.PROD_CLIENT_URL];
+
 app.use(cors({
-    origin: ["http://localhost:3000", "https://medical-booking-frontend-nine.vercel.app"], 
+    origin: function (origin, callback) {
+        if (!origin || allowedOrigins.includes(origin))
+            { return callback(null, true); 
+        }
+        callback(new Error("Not allowed by CORS"));
+    },
     credentials: true
 }));
 app.use(express.json()); //lets us parse JSON bodies
