@@ -8,7 +8,6 @@ const router = express.Router();
 
 // POST /api/admin/login
 router.post("/login", async (req, res) => {
-    console.log("/api/admin/login HIT!", req.body);
     const { email, password } = req.body;
     try {
         const admin = await Admin.findOne({ email });
@@ -32,11 +31,12 @@ router.post("/login", async (req, res) => {
         res.cookie("adminToken", token, {
             httpOnly: true,
             secure: true, // set to true if using HTTPS
-            sameSite: "strict", // Prevent CSRF          
+            sameSite: "none", // MUST be None when frontend and backend are on different domains.         
             maxAge: 24 * 60 * 60 * 1000, // 1 day
         });
-
-        res.json({ success: true })
+        //Send success JSON
+        return res.json({ ok: true })
+        
     } catch (error) {
         console.error("Login error", error);
         res.status(500).json({ message: "Server error "});
